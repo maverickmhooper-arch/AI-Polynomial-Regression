@@ -5,7 +5,7 @@ This repository contains a deep learning model built to approximate the quadrati
 ## Model Hyperparameters
 * **Hidden Layers:** 4 fully connected layers.
 * **Layer Width:** 128 nodes per hidden layer.
-* **Activation:** LeakyReLU (\(\alpha = 0.25\)).
+* **Activation:** LeakyReLU ((\alpha = 0.25\)).
 * **Optimizer:** Adam.
 * **Learning Rate:** \(0.0005\) for stable convergence.
 * **Data Domain (Span):** \([-50, 50]\).
@@ -56,7 +56,7 @@ python main.py
 
 ## Code Highlight: Data Generation
 
-The target values include small Gaussian noise (\(\sigma = 0.1\)) to simulate real-world data collection:
+The target values include small Gaussian noise ((\sigma = 0.1\)) to simulate real-world data collection:
 
 ```python
 # From vector() function
