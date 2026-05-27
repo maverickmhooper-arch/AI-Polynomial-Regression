@@ -1,23 +1,39 @@
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
-import numpy as numpy
+import numpy as np
 import time
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+
 
 # Variables
 span = 50
 
+def function(x):
+  y = x**2
+  return y
+
 # Model Vectorization
 def vector(span, num_generate=500):
   x = torch.linspace(-span, span, num_generate).view(-1, 1)
-  y = x**2 + torch.randn(x.size()) * 0.1 # Added noise with a magnitude of 0.1
+  y = function(x) + torch.randn(x.size()) * 0.1 # Added noise with a magnitude of 0.1
   # Goal is a perfect parabola with minimal noise.
   return x, y # Return x and y
-  
+
 
 # 1. Model Definition
 
-def model_training(num_epochs = 20000):
+def scikit_model(x, y_target):
+  x_values = x.numpy()
+  y_values = y_target.numpy()
+  poly_features = PolynomialFeatures(degree = 2, include_bias = False)
+  x_ran = poly_features.fit_transform(x_values)
+  poly_model = LinearRegression()
+  poly_model.fit(x_ran, y_values)
+  return poly_model, poly_features
+
+def model_training(poly_model = None, poly_features = None, num_epochs = 20000):
 
   model = nn.Sequential(
       nn.Linear(1, 128),
@@ -37,7 +53,17 @@ def model_training(num_epochs = 20000):
   print(f"Training to solve y = x². Non-Linear Regression. ") # ² is the code for the exponent x^2
 
 
-  print(f"Margin of error is {round((span**2)* allowed_error, 2)}")
+  print(f"Margin of error is {round((function(span))* allowed_error, 2)}")
+
+  scikit_loss = "N/A"
+  if poly_model and poly_features :
+    x_values = x.numpy()
+    y_values = y_target.numpy()
+    x_ran = poly_features.transform(x_values)
+    scikit_prediction = poly_model.predict(x_ran)
+    # Fixed: scikit_predictions -> scikit_prediction
+    scikit_ran_error = np.mean((scikit_prediction - y_values) ** 2)
+    scikit_loss = f"{scikit_ran_error}"
 
   success = False
   model.train()
@@ -63,11 +89,12 @@ def model_training(num_epochs = 20000):
     # Log Progress
     if (epoch % 100) == 0:
       with torch.no_grad():
+        
         model.eval()
         current_prediction = model(x).numpy()
         model_history.append((epoch, current_prediction))
         model.train()
-        print(f"Epoch: {epoch: <3} | Loss: {loss.item():.2f}")
+        print(f"Epoch: {epoch: <3} | Neural Loss: {loss.item():.2f}")
 
         if loss.item() <= (span**2) * allowed_error:
           print("SUCCESS IN TRAINING. ✅")
@@ -90,6 +117,7 @@ def model_training(num_epochs = 20000):
     # PUNISHMENT
   return False, [] # Signal to continue the main loop
 
+
 def inference(model):
 
     try:
@@ -105,17 +133,31 @@ def inference(model):
       model.eval()
       with torch.no_grad():
         prediction = model(y_inferred)
+        input_val_np = np.array([[input_float]]) # Changed variable name to avoid shadowing
+        # Fixed: .transfrom -> .transform
+        # Fixed: Using the global poly_features and poly_model
+        input_read = poly_features.transform(input_val_np)
+        scikit_prediction = poly_model.predict(input_read)
         print(f"AI Prediction -> {round(prediction.item(), 2)}")
-        print(f"Mathematical answer -> {float(input_val)**2}") # Cast input_val to float for calculation
-        print(f"Error was {abs(prediction.item() - (float(input_val)**2))}") # Cast input_val to float for calculation
+        print(f"Error was {abs(prediction.item() - (function(float(input_float))))}") # Use input_float
+        # Fixed: Using [0,0] for scikit_prediction for robustness
+        print(f"Scikit Prediction -> {round(scikit_prediction[0,0], 2)},")
+        print(f"Error was {abs(scikit_prediction[0,0] - function(float(input_float)))}") # Use input_float
+        print(f"Mathematical answer -> {function(float(input_float))}") # Use input_float
+
     except ValueError:
       print("Invalid input. Please enter a valid input. ")
 
-def plot_history(x, y_target, history):
+def plot_history(x, y_target, history, poly_model = None, poly_features = None):
   history = history[1:]
   indices = [0, len(history)//3, 2*len(history)//3, len(history) - 1]
 
-  fig, axes = plt.subplots(2, 2, figsize = (12, 10))
+  scikit_line = None
+  if poly_model and poly_features:
+    x_ran = poly_features.transform(x.numpy())
+    scikit_line = poly_model.predict(x_ran)
+
+  fig, axes = plt.subplots(2, 2, figsize = (6, 5))
   axes = axes.flatten()
   for i, idx in enumerate(indices):
     if idx >= len(history):
@@ -123,14 +165,19 @@ def plot_history(x, y_target, history):
     epoch, predictions = history[idx]
     ax = axes[i]
 
-    ax.scatter(x.numpy(), y_target.numpy(), color = "red", alpha = 0.3, s = 5, label = "Real")
-    ax.plot(x.numpy(), predictions, color = "green", linewidth = 2, label = "Model")
+    # Fixed: .np() -> .numpy()
+    ax.scatter(x.numpy(), y_target.numpy(), color = "blue", alpha = 0.3, s = 5, label = "Real")
+    # Fixed: .np() -> .numpy()
+    ax.plot(x.numpy(), predictions, color = "green", linewidth = 2, linestyle = "--", label = "Neural")
+
+    if scikit_line is not None:
+      ax.plot(x.numpy(), scikit_line, color = "red", linewidth = 1.5, linestyle = "-.", label = "Scikit Model")
 
     ax.set_title(f"Epoch {epoch}")
     ax.grid(True, linestyle = "--", alpha = 0.5)
     if i == 0:
       ax.legend()
-  plt.title("Model vs Math")
+  plt.title("Model vs Scikit vs Math")
   plt.tight_layout()
   plt.grid(True)
   plt.savefig("model.png")
@@ -141,17 +188,24 @@ def plot_history(x, y_target, history):
 
 if __name__ == "__main__":
   x, y_target = vector(span, 500)
+  # Initialize these globally for inference function to access them
+  global poly_model, poly_features 
+  poly_model = None
+  poly_features = None
+
   while True:
     user_input = input("[T]rain, [I]nference, [Q]uit. --> ").strip().upper()
     if user_input == "T":
-      model, history = model_training()
+      # Assign to global variables
+      poly_model, poly_features = scikit_model(x, y_target)
+      model, history = model_training(poly_model, poly_features)
       if model:
-        plot_history(x, y_target, history)
+        plot_history(x, y_target, history, poly_model, poly_features)
     elif (user_input == "I"):
-      if model:
+      if model and poly_model and poly_features: # Ensure all models are trained for inference
         inference(model)
       else:
-        print("No model exists. Train first. ")
+        print("No models exist or are trained. Train first. ")
 
     elif user_input == "Q":
       break
