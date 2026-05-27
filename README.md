@@ -1,6 +1,6 @@
 # PyTorch Non-Linear Regression Model (\(x^2\) Approximator)
 
-This repo contains a program which runs a Neural Network and a scikit-learn model which are both trying to converge on a specific polynomial, x^2 in this case. It shows how Neural Networks compare with scikit-learn, as well as how learning rates and error threshols affect the results.
+This repo contains a program which runs a Neural Network and a scikit-learn model which are both trying to converge on a specific polynomial, x^2 in this case. It shows how Neural Networks compare with scikit-learn, as well as how learning rates and error threshols affect the results. It also contains graphs of performance, with one showing the loss rate improving as a function of time, and the other showing the model getting closer to the overall quadratic curve as the training run moves further along.
 
 ## Model Hyperparameters
 * **Hidden Layers:** 4 fully connected layers.
@@ -57,16 +57,19 @@ python Polynomial_Regression.py
 ---
 
 ## Code Highlight: Data Generation
-The code allows for comparisons of the model's progress across different time frames. It takes snippets from different points in the training, and compiles them into 4 different graphs that can be easily compared. 
+The code allows for comparisons of the model's progress across different time frames. It takes snippets from different points in the training, and compiles them into 4 different graphs that can be easily compared. It also generates a graph of the overall loss rate as a function of epochs.
 
 ### Results 
-<img width="600" height="500" alt="model (2)" src="https://github.com/user-attachments/assets/bee61b40-f66e-4fcd-8ea1-21c2d7372de4" />
+<img width="600" height="500" alt="model (3)" src="https://github.com/user-attachments/assets/2f95aa78-2c59-49b8-a437-b0bf945f64f2" />
+<img width="1000" height="1000" alt="lossrate" src="https://github.com/user-attachments/assets/8c04ab6b-e915-4281-b115-5ef66f0f2f89" />
 
-These are results of one run that I ran, showed on matplotlib. This was a run with a 0.0001 error threshold, or 0.01%. This ensured high accuracy on the inference run. However, this also caused the model to take almost all of the epochs available for testing. This shows that accuracy and time taken are inversely proportional.
+
+These are results of one run that I ran, showed on matplotlib. This was a run with a 0.01 error threshold, or 1%. The graph of the error shows that as time goes on, the model gets better and better. This is also reflected in the graph of the parabola, as the curve gets more and more accurate.
 
 # What I Learned
 
 In working on this project, I learned that learning models like this are incredible good at finding patterns in exponential functions. It was difficult to find where to start on this, but after I got a foothold in the basics, I just grew from there.
+
 ### I learned the following
 1. How to use the Adam optimizer and refine the learning rate.
 2. How to create an inference interface so the user can ask for an input-output.
@@ -79,6 +82,6 @@ In working on this project, I learned that learning models like this are incredi
 The hardest part was creating the scikit-learn model and the graph comparisons. This is simply because I don't use scikit-learn often.
 
 ## The Future
-In the future, I'm probably going to add some normalization and a graph showing the model converging toward the error threshold. I'm also going to move toward multi-variable in the future. 
+In the future, I'm probably going to add some normalization and move toward multi-variable. 
 
 If you've read to the end, you get a cookie! 🍪
