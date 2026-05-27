@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
+import numpy as numpy
+import time
 
 # Model Vectorization
 def vector(num_generate=500):
@@ -30,10 +32,11 @@ def model_training(num_epochs = 20000):
 
   optimizer = torch.optim.Adam(model.parameters(), lr=0.0005)
   criterion = nn.MSELoss()
+  allowed_error = float(input("What would you like the allowed error to be? "))
+  print(f"Training to solve y = x². Non-Linear Regression. ") # ² is the code for the exponent x^2
 
-  print(f"Training to solve y = x\u00b2. Non-Linear Regression. ") # \u00b2 is the code for the exponent x^2
 
-  print(f"Margin of error is {round((span**2)* 0.001, 2)}")
+  print(f"Margin of error is {round((span**2)* allowed_error, 2)}")
 
   success = False
   model.train()
@@ -60,12 +63,12 @@ def model_training(num_epochs = 20000):
     if (epoch % 100) == 0:
       with torch.no_grad():
         model.eval()
-        current_prediction = model(x).numpy
-        model_history.append(epoch, current_prediction)
+        current_prediction = model(x).numpy()
+        model_history.append((epoch, current_prediction))
         model.train()
         print(f"Epoch: {epoch: <3} | Loss: {loss.item():.2f}")
 
-        if loss.item() <= (span**2) * 0.001:
+        if loss.item() <= (span**2) * allowed_error:
           print("SUCCESS IN TRAINING. ✅")
           print(f"EMA loss -> {ema_loss}")
           success = True
@@ -84,7 +87,7 @@ def model_training(num_epochs = 20000):
     print("FAILURE IN TRAINING. ❌")
     print(f"EMA loss -> {ema_loss}")
     # PUNISHMENT
-  return False, [] # Signal to continue the main loop  
+  return False, [] # Signal to continue the main loop
 
 def inference(model):
 
@@ -117,12 +120,12 @@ def plot_history(x, y_target, history):
       continue
     epoch, predictions = history[idx]
     ax = axes[i]
-  
-    ax.scatter(x.numpy(), y_target,numpy(), color = "red", alpha = 0.3, s = 5, label = "Real")
-    ax.plot(x.numpy(), predictions, color = "greed", linewidth = 2, label = "Model")
-  
+
+    ax.scatter(x.numpy(), y_target.numpy(), color = "red", alpha = 0.3, s = 5, label = "Real")
+    ax.plot(x.numpy(), predictions, color = "green", linewidth = 2, label = "Model")
+
     ax.set_title(f"Epoch {epoch}")
-    ax.grid(True, linestyle = "--", alpha)
+    ax.grid(True, linestyle = "--", alpha = 0.5)
     if i == 0:
       ax.legend()
   plt.title("Model vs Math")
@@ -130,7 +133,8 @@ def plot_history(x, y_target, history):
   plt.grid(True)
   plt.savefig("model.png")
   plt.show()
-  
+  time.sleep(7.5)
+  plt.close()
 
 
 if __name__ == "__main__":
@@ -146,8 +150,8 @@ if __name__ == "__main__":
         inference(model)
       else:
         print("No model exists. Train first. ")
-  
+
     elif user_input == "Q":
-      break  
+      break
 
   print("------END-------")
