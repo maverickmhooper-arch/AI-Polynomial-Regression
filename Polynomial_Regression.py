@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
-
-
+import matplotlib.pyplot as plt
 
 # Model Vectorization
 def vector(num_generate=500):
@@ -11,6 +10,7 @@ def vector(num_generate=500):
   y = x**2 + torch.randn(x.size()) * 0.1 # Added noise with a magnitude of 0.1
   # Goal is a perfect parabola with minimal noise.
   return x, y # Return x and y
+  
 
 # 1. Model Definition
 
@@ -38,6 +38,7 @@ def model_training(num_epochs = 20000):
   success = False
   model.train()
   ema_loss = 0
+  model_history = []
 
   for epoch in range(num_epochs + 1):
     # Forward pass
@@ -58,6 +59,10 @@ def model_training(num_epochs = 20000):
     # Log Progress
     if (epoch % 100) == 0:
       with torch.no_grad():
+        model.eval()
+        current_prediction = model(x).numpy
+        model_history.append(epoch, current_prediction)
+        model.train()
         print(f"Epoch: {epoch: <3} | Loss: {loss.item():.2f}")
 
         if loss.item() <= (span**2) * 0.001:
@@ -73,13 +78,13 @@ def model_training(num_epochs = 20000):
   if success:
     print(f"Epochs required {epoch}.\n")
     print("AI finished training")
-    return model
+    return model, model_history
 
   if not success:
     print("FAILURE IN TRAINING. ❌")
     print(f"EMA loss -> {ema_loss}")
     # PUNISHMENT
-  return False # Signal to continue the main loop  
+  return False, [] # Signal to continue the main loop  
 
 def inference(model):
 
@@ -101,6 +106,30 @@ def inference(model):
         print(f"Error was {abs(prediction.item() - (float(input_val)**2))}") # Cast input_val to float for calculation
     except ValueError:
       print("Invalid input. Please enter a valid input. ")
+
+def plot_history(x, y_target, history):
+  indices = [0, len(history)//3, 2*len(history)//3, len(history) - 1]
+
+  fig, axes = plt.subplots(2, 2, figsize = (12, 10))
+  axes = axes.flatten()
+  for i, idx in enumerate(indices):
+    if idx >= len(history):
+      continue
+    epoch, predictions = history[idx]
+    ax = axes[i]
+  
+    ax.scatter(x.numpy(), y_target,numpy(), color = "red", alpha = 0.3, s = 5, label = "Real")
+    ax.plot(x.numpy(), predictions, color = "greed", linewidth = 2, label = "Model")
+  
+    ax.set_title(f"Epoch {epoch}")
+    ax.grid(True, linestyle = "--", alpha)
+    if i == 0:
+      ax.legend()
+  plt.title("Model vs Math")
+  plt.tight_layout()
+  plt.grid(True)
+  plt.savefig("model.png")
+  plt.show()
   
 
 
@@ -109,7 +138,9 @@ if __name__ == "__main__":
   while True:
     user_input = input("[T]rain, [I]nference, [Q]uit. --> ").strip().upper()
     if user_input == "T":
-      model = model_training()
+      model, history = model_training()
+      if model:
+        plot_history(x, y_target, history)
     elif (user_input == "I"):
       if model:
         inference(model)
