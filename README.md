@@ -76,7 +76,7 @@ In working on this project, I learned that learning models like this are incredi
 3. Why more depth and layers of a model helps the model reach the correct answer faster.
 4. I learned how to use matplotlib to model progress from the network.
 5. I learned how matplotlib can be used to compare different architectures and results.
-6. Scikit-learn is much faster and more accurate for simply problems like this. 
+6. Scikit-learn is much faster and more accurate for simple problems like this. 
 
 ### Hardest Part
 The hardest part was creating the scikit-learn model and the graph comparisons. This is simply because I don't use scikit-learn often.
