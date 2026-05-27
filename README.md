@@ -32,11 +32,10 @@ Input (1) ──> Linear(128) ──> LeakyReLU ──> Linear(128) ──> Leak
    ```
 
 2. **Install dependencies:**
-   Ensure you have `torch, numpy, time, and sklearn` installed:
+   Ensure you have `torch, numpy, and sklearn` installed:
    ```bash
    pip install torch
    pip install numpy
-   pip install time
    pip install sklearn
    ```
 
@@ -63,7 +62,7 @@ The code allows for comparisons of the model's progress across different time fr
 ### Results 
 <img width="600" height="500" alt="model (2)" src="https://github.com/user-attachments/assets/bee61b40-f66e-4fcd-8ea1-21c2d7372de4" />
 
-These are results of one run that I ran, showed on matplotlib.
+These are results of one run that I ran, showed on matplotlib. This was a run with a 0.0001 error threshold, or 0.01%. This ensured high accuracy on the inference run. However, this also caused the model to take almost all of the epochs available for testing. This shows that accuracy and time taken are inversely proportional.
 
 # What I Learned
 
