@@ -1,6 +1,6 @@
 # PyTorch Non-Linear Regression Model (\(x^2\) Approximator)
 
-This repository contains a deep learning model built to approximate the quadratic function \(y = x^2\). It demonstrates how a multi-layer neural network can learn non-linear functions from synthetic, noisy datasets.
+This repo contains a program which runs a Neural Network and a scikit-learn model which are both trying to converge on a specific polynomial, x^2 in this case. It shows how Neural Networks compare with scikit-learn, as well as how learning rates and error threshols affect the results.
 
 ## Model Hyperparameters
 * **Hidden Layers:** 4 fully connected layers.
@@ -32,9 +32,12 @@ Input (1) ──> Linear(128) ──> LeakyReLU ──> Linear(128) ──> Leak
    ```
 
 2. **Install dependencies:**
-   Ensure you have `torch` installed:
+   Ensure you have `torch, numpy, time, and sklearn` installed:
    ```bash
    pip install torch
+   pip install numpy
+   pip install time
+   pip install sklearn
    ```
 
 ---
@@ -58,23 +61,25 @@ python Polynomial_Regression.py
 The code allows for comparisons of the model's progress across different time frames. It takes snippets from different points in the training, and compiles them into 4 different graphs that can be easily compared. 
 
 ### Results 
-<img width="1200" height="1000" alt="model" src="https://github.com/user-attachments/assets/446885f9-f593-4135-bf2a-769d96b9aaf8" />
+<img width="600" height="500" alt="model (2)" src="https://github.com/user-attachments/assets/bee61b40-f66e-4fcd-8ea1-21c2d7372de4" />
 
 These are results of one run that I ran, showed on matplotlib.
 
-### What I Learned
+# What I Learned
 
 In working on this project, I learned that learning models like this are incredible good at finding patterns in exponential functions. It was difficult to find where to start on this, but after I got a foothold in the basics, I just grew from there.
-# I learned the following
+### I learned the following
 1. How to use the Adam optimizer and refine the learning rate.
 2. How to create an inference interface so the user can ask for an input-output.
 3. Why more depth and layers of a model helps the model reach the correct answer faster.
 4. I learned how to use matplotlib to model progress from the network.
+5. I learned how matplotlib can be used to compare different architectures and results.
+6. Scikit-learn is much faster and more accurate for simply problems like this. 
 
 ### Hardest Part
-The hardest part was figuring out how to get the returned model from the training_model() function and bringing it into the inference part. Also, it was very tedious doing the floats and input_vals, but that's just me.
+The hardest part was creating the scikit-learn model and the graph comparisons. This is simply because I don't use scikit-learn often.
 
 ## The Future
-In the future, I'm probably going to add some normalization and a scikit-learn model for a comparison against another model. I'm also going to move toward multi-variable in the future. 
+In the future, I'm probably going to add some normalization and a graph showing the model converging toward the error threshold. I'm also going to move toward multi-variable in the future. 
 
 If you've read to the end, you get a cookie! 🍪
