@@ -66,10 +66,10 @@ These are results of one run that I ran, showed on matplotlib.
 
 In working on this project, I learned that learning models like this are incredible good at finding patterns in exponential functions. It was difficult to find where to start on this, but after I got a foothold in the basics, I just grew from there.
 # I learned the following
-* 1. How to use the Adam optimizer and refine the learning rate.
-* 2. How to create an inference interface so the user can ask for an input-output.
-* 3. Why more depth and layers of a model helps the model reach the correct answer faster.
-* 4. I learned how to use matplotlib to model progress from the network.
+1. How to use the Adam optimizer and refine the learning rate.
+2. How to create an inference interface so the user can ask for an input-output.
+3. Why more depth and layers of a model helps the model reach the correct answer faster.
+4. I learned how to use matplotlib to model progress from the network.
 
 ### Hardest Part
 The hardest part was figuring out how to get the returned model from the training_model() function and bringing it into the inference part. Also, it was very tedious doing the floats and input_vals, but that's just me.
