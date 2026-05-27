@@ -7,8 +7,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
 
-# Variables
-span = 50
 
 def function(x):
   y = x**2
@@ -203,8 +201,8 @@ def progress(epoch_list, loss_list):
   time.sleep(10)
   plt.close()
 
-
-if __name__ == "__main__":
+def main():
+  span = 50
   x, y_target = vector(span, 500)
   # Initialize these globally for inference function to access them
   global poly_model, poly_features
@@ -230,3 +228,9 @@ if __name__ == "__main__":
       break
 
   print("------END-------")
+
+
+
+
+if __name__ == "__main__":
+  main()
