@@ -1,4 +1,4 @@
-### PyTorch Non-Linear Regression Model (\(x^2\) Approximator)
+# PyTorch Non-Linear Regression Model (\(x^2\) Approximator)
 
 This repository contains a deep learning model built to approximate the quadratic function \(y = x^2\). It demonstrates how a multi-layer neural network can learn non-linear functions from synthetic, noisy datasets.
 
@@ -55,27 +55,21 @@ python Polynomial_Regression.py
 ---
 
 ## Code Highlight: Data Generation
+The code allows for comparisons of the model's progress across different time frames. It takes snippets from different points in the training, and compiles them into 4 different graphs that can be easily compared. 
 
-The target values include small Gaussian noise (\(sigma = 0.1\)) to simulate real-world data collection:
-
-```python
-# From vector() function
-x = torch.linspace(-50, 50, num_generate).view(-1, 1)
-y = x**2 + torch.randn(x.size()) * 0.1
-```
-
-## What I Learned
+### What I Learned
 
 In working on this project, I learned that learning models like this are incredible good at finding patterns in exponential functions. It was difficult to find where to start on this, but after I got a foothold in the basics, I just grew from there.
 # I learned the following
 * 1. How to use the Adam optimizer and refine the learning rate.
 * 2. How to create an inference interface so the user can ask for an input-output.
 * 3. Why more depth and layers of a model helps the model reach the correct answer faster.
+* 4. I learned how to use matplotlib to model progress from the network.
 
-# Hardest Part
-The hardest part was figuring out how to get the returned model from the training_model() function and bringing it into the inference part. Also, it was very tedious doing the floats and input_vals, but that's just me
+### Hardest Part
+The hardest part was figuring out how to get the returned model from the training_model() function and bringing it into the inference part. Also, it was very tedious doing the floats and input_vals, but that's just me.
 
 ## The Future
-In the future, I'm probably going to add some normalization, matplotlib for graphing and comparisons, and a scikit-learn model for a comparison against another model. I'm also going to move toward multi-variable in the future. 
+In the future, I'm probably going to add some normalization and a scikit-learn model for a comparison against another model. I'm also going to move toward multi-variable in the future. 
 
 If you've read to the end, you get a cookie! 🍪
