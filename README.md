@@ -57,6 +57,11 @@ python Polynomial_Regression.py
 ## Code Highlight: Data Generation
 The code allows for comparisons of the model's progress across different time frames. It takes snippets from different points in the training, and compiles them into 4 different graphs that can be easily compared. 
 
+### Results 
+<img width="1200" height="1000" alt="model" src="https://github.com/user-attachments/assets/446885f9-f593-4135-bf2a-769d96b9aaf8" />
+
+These are results of one run that I ran, showed on matplotlib.
+
 ### What I Learned
 
 In working on this project, I learned that learning models like this are incredible good at finding patterns in exponential functions. It was difficult to find where to start on this, but after I got a foothold in the basics, I just grew from there.
