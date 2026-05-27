@@ -84,4 +84,4 @@ The hardest part was creating the scikit-learn model and the graph comparisons. 
 ## The Future
 In the future, I'm probably going to add some normalization and move toward multi-variable. 
 
-If you've read to the end, you get a cookie! 🍪
+If you read to the end, you get a cookie! 🍪
