@@ -31,7 +31,7 @@ def scikit_model(x, y_target):
   poly_model.fit(x_ran, y_values)
   return poly_model, poly_features
 
-def model_training(poly_model = None, poly_features = None, num_epochs = 20000):
+def model_training(x, y_target, span, poly_model = None, poly_features = None, num_epochs = 20000):
 
   model = nn.Sequential(
       nn.Linear(1, 128),
@@ -121,7 +121,7 @@ def model_training(poly_model = None, poly_features = None, num_epochs = 20000):
   return False, [], losses, epochs # Signal to continue the main loop
 
 
-def inference(model):
+def inference(model, span):
 
     try:
       input_val = input("What is the value that you would like to calculate? --> ")
@@ -214,13 +214,13 @@ def main():
     if user_input == "T":
       # Assign to global variables
       poly_model, poly_features = scikit_model(x, y_target)
-      model, history, losses, epochs = model_training(poly_model, poly_features)
+      model, history, losses, epochs = model_training(x, y_target, poly_model, poly_features)
       if model:
-        plot_history(x, y_target, history, poly_model, poly_features)
+        plot_history(x, y_target, span,  history, poly_model, poly_features)
         progress(epochs, losses)
     elif (user_input == "I"):
       if model and poly_model and poly_features: # Ensure all models are trained for inference
-        inference(model)
+        inference(model, span)
       else:
         print("No models exist or are trained. Train first. ")
 
