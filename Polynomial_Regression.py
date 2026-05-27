@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as numpy
 import time
 
+# Variables
+span = 50
+
 # Model Vectorization
-def vector(num_generate=500):
-  global span
-  span = 50
+def vector(span, num_generate=500):
   x = torch.linspace(-span, span, num_generate).view(-1, 1)
   y = x**2 + torch.randn(x.size()) * 0.1 # Added noise with a magnitude of 0.1
   # Goal is a perfect parabola with minimal noise.
@@ -139,7 +140,7 @@ def plot_history(x, y_target, history):
 
 
 if __name__ == "__main__":
-  x, y_target = vector(500)
+  x, y_target = vector(span, 500)
   while True:
     user_input = input("[T]rain, [I]nference, [Q]uit. --> ").strip().upper()
     if user_input == "T":
