@@ -69,6 +69,8 @@ def model_training(poly_model = None, poly_features = None, num_epochs = 20000):
   model.train()
   ema_loss = 0
   model_history = []
+  losses = []
+  epochs = []
 
   for epoch in range(num_epochs + 1):
     # Forward pass
@@ -85,16 +87,19 @@ def model_training(poly_model = None, poly_features = None, num_epochs = 20000):
 
     alpha = 0.05
     ema_loss = (alpha * loss.item()) + (1 - alpha) * ema_loss
+    losses.append(loss.item())
+    epochs.append(epoch)
 
     # Log Progress
     if (epoch % 100) == 0:
       with torch.no_grad():
-        
+
         model.eval()
         current_prediction = model(x).numpy()
         model_history.append((epoch, current_prediction))
         model.train()
         print(f"Epoch: {epoch: <3} | Neural Loss: {loss.item():.2f}")
+
 
         if loss.item() <= (span**2) * allowed_error:
           print("SUCCESS IN TRAINING. ✅")
@@ -109,13 +114,13 @@ def model_training(poly_model = None, poly_features = None, num_epochs = 20000):
   if success:
     print(f"Epochs required {epoch}.\n")
     print("AI finished training")
-    return model, model_history
+    return model, model_history, losses, epochs
 
   if not success:
     print("FAILURE IN TRAINING. ❌")
     print(f"EMA loss -> {ema_loss}")
     # PUNISHMENT
-  return False, [] # Signal to continue the main loop
+  return False, [], losses, epochs # Signal to continue the main loop
 
 
 def inference(model):
@@ -141,7 +146,8 @@ def inference(model):
         print(f"AI Prediction -> {round(prediction.item(), 2)}")
         print(f"Error was {abs(prediction.item() - (function(float(input_float))))}") # Use input_float
         # Fixed: Using [0,0] for scikit_prediction for robustness
-        print(f"Scikit Prediction -> {round(scikit_prediction[0,0], 2)},")
+        print(f"Scikit Prediction -> {round(scikit_prediction[0,0], 2)},"
+)
         print(f"Error was {abs(scikit_prediction[0,0] - function(float(input_float)))}") # Use input_float
         print(f"Mathematical answer -> {function(float(input_float))}") # Use input_float
 
@@ -182,14 +188,26 @@ def plot_history(x, y_target, history, poly_model = None, poly_features = None):
   plt.grid(True)
   plt.savefig("model.png")
   plt.show()
-  time.sleep(7.5)
+  time.sleep(10)
+  plt.close()
+
+def progress(epoch_list, loss_list):
+  plt.figure(figsize = (10, 10))
+  plt.plot(epoch_list, loss_list)
+  plt.xlabel("Epoch")
+  plt.ylabel("Error")
+  plt.title("Error over time", fontsize = "20") # Changed plt.set_title to plt.title
+  plt.yscale('log') # Set y-axis to logarithmic scale
+  plt.savefig("lossrate.png")
+  plt.show()
+  time.sleep(10)
   plt.close()
 
 
 if __name__ == "__main__":
   x, y_target = vector(span, 500)
   # Initialize these globally for inference function to access them
-  global poly_model, poly_features 
+  global poly_model, poly_features
   poly_model = None
   poly_features = None
 
@@ -198,9 +216,10 @@ if __name__ == "__main__":
     if user_input == "T":
       # Assign to global variables
       poly_model, poly_features = scikit_model(x, y_target)
-      model, history = model_training(poly_model, poly_features)
+      model, history, losses, epochs = model_training(poly_model, poly_features)
       if model:
         plot_history(x, y_target, history, poly_model, poly_features)
+        progress(epochs, losses)
     elif (user_input == "I"):
       if model and poly_model and poly_features: # Ensure all models are trained for inference
         inference(model)
