@@ -111,6 +111,7 @@ def inference(model):
       print("Invalid input. Please enter a valid input. ")
 
 def plot_history(x, y_target, history):
+  history = history[1:]
   indices = [0, len(history)//3, 2*len(history)//3, len(history) - 1]
 
   fig, axes = plt.subplots(2, 2, figsize = (12, 10))
