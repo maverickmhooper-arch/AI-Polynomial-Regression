@@ -89,7 +89,7 @@ def model_training(x, y_target, span, poly_model = None, poly_features = None, n
     epochs.append(epoch)
 
     # Log Progress
-    if (epoch % 100 0) == 0:
+    if (epoch % 100) == 0:
       with torch.no_grad():
 
         model.eval()
@@ -99,7 +99,7 @@ def model_training(x, y_target, span, poly_model = None, poly_features = None, n
         print(f"Epoch: {epoch: <3} | Neural Loss: {loss.item():.8f}")
 
 
-        if loss.item() <= (span**2) * allowed_error:
+        if loss.item() <= (function(span)) * allowed_error:
           print("SUCCESS IN TRAINING. ✅")
           print(f"EMA loss -> {ema_loss}")
           success = True
