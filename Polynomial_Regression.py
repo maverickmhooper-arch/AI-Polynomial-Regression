@@ -15,8 +15,8 @@ def function(x):
 # Model Vectorization
 def vector(span, num_generate=500):
   x = torch.linspace(-span, span, num_generate).view(-1, 1)
-  y = function(x) + torch.randn(x.size()) * 0.1 # Added noise with a magnitude of 0.1
-  # Goal is a perfect parabola with minimal noise.
+  y = function(x) # Removed noise for better results for training
+  # Goal is a perfect parabola 
   return x, y # Return x and y
 
 
@@ -31,7 +31,7 @@ def scikit_model(x, y_target):
   poly_model.fit(x_ran, y_values)
   return poly_model, poly_features
 
-def model_training(x, y_target, span, poly_model = None, poly_features = None, num_epochs = 20000):
+def model_training(x, y_target, span, poly_model = None, poly_features = None, num_epochs = 50000):
 
   model = nn.Sequential(
       nn.Linear(1, 128),
@@ -51,7 +51,7 @@ def model_training(x, y_target, span, poly_model = None, poly_features = None, n
   print(f"Training to solve y = x². Non-Linear Regression. ") # ² is the code for the exponent x^2
 
 
-  print(f"Margin of error is {round((function(span))* allowed_error, 2)}")
+  print(f"Margin of error is {round((function(span))* allowed_error, 10)}")
 
   scikit_loss = "N/A"
   if poly_model and poly_features :
@@ -89,14 +89,14 @@ def model_training(x, y_target, span, poly_model = None, poly_features = None, n
     epochs.append(epoch)
 
     # Log Progress
-    if (epoch % 100) == 0:
+    if (epoch % 100 0) == 0:
       with torch.no_grad():
 
         model.eval()
         current_prediction = model(x).numpy()
         model_history.append((epoch, current_prediction))
         model.train()
-        print(f"Epoch: {epoch: <3} | Neural Loss: {loss.item():.2f}")
+        print(f"Epoch: {epoch: <3} | Neural Loss: {loss.item():.8f}")
 
 
         if loss.item() <= (span**2) * allowed_error:
@@ -214,9 +214,9 @@ def main():
     if user_input == "T":
       # Assign to global variables
       poly_model, poly_features = scikit_model(x, y_target)
-      model, history, losses, epochs = model_training(x, y_target, poly_model, poly_features)
+      model, history, losses, epochs = model_training(x, y_target, span, poly_model, poly_features)
       if model:
-        plot_history(x, y_target, span,  history, poly_model, poly_features)
+        plot_history(x, y_target, history, poly_model, poly_features)
         progress(epochs, losses)
     elif (user_input == "I"):
       if model and poly_model and poly_features: # Ensure all models are trained for inference
