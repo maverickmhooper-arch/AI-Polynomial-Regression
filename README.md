@@ -85,4 +85,11 @@ The hardest part was creating the scikit-learn model and the graph comparisons. 
 ## The Future
 In the future, I'm probably going to add some normalization and move toward multi-variable. 
 
-If you read to the end, you get a cookie! 🍪
+
+### Authors
+* @maverickmhooper (https://www.github.com) --- Lead Developer
+
+### License 
+This project is licensed under the MIT License - see the LICENSE file for details.
+Copyright © 2026 Maverick Hooper
+
