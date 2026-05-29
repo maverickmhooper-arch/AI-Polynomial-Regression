@@ -12,7 +12,7 @@ def function(x):
   return y
 
 # Model Vectorization
-def vector(span, num_generate=500):
+def vector(span, num_generate=1000):
   x = torch.linspace(-span, span, num_generate).view(-1, 1)
   y = function(x) # Removed noise for better results for training
   # Goal is a perfect parabola
@@ -30,7 +30,7 @@ def scikit_model(x, y_target):
   poly_model.fit(x_ran, y_values)
   return poly_model, poly_features
 
-def model_def(x, y_target, num_epochs = 1000):
+def model_def(x, y_target, num_epochs = 300):
   # This function now only determines the best learning rate
   # It will use temporary models for this search, not the final training model.
 
@@ -38,7 +38,7 @@ def model_def(x, y_target, num_epochs = 1000):
   different_lr_epochs = []
   print("Solving for learning rate...")
   loop = 0
-  iters = 5
+  iters = 3
   num_lrs = len(lrs)
   for current_lr in lrs:
     loop += 1
@@ -74,6 +74,7 @@ def model_def(x, y_target, num_epochs = 1000):
 
       lr_epochs.append(best_loss)
       print(f"{i + 1} run(s) complete. {iters - (i + 1)} left.")
+      print(f"Best loss for learning rate of {current_lr} on run {i + 1} was {best_loss}")
     different_lr_epochs.append(lr_epochs)
     print(f"{loop} learning rate(s) down. {num_lrs - loop} left. ")
 
@@ -88,11 +89,11 @@ def model_def(x, y_target, num_epochs = 1000):
   selected_lr = lrs[best_lr_index]
 
   print("Parameters finished. ")
-  print(f"Accepted learning rate is {selected_lr}.")
+  print(f"Accepted learning rate is {selected_lr :.4f}.")
   return selected_lr # Only return the selected learning rate
 
 
-def model_training(x, y_target, span, poly_model = None, poly_features = None, num_epochs = 50000):
+def model_training(x, y_target, span, poly_model = None, poly_features = None, num_epochs = 100000):
 
   # Get the best learning rate from model_def
   selected_lr = model_def(x, y_target)
@@ -162,7 +163,7 @@ def model_training(x, y_target, span, poly_model = None, poly_features = None, n
     epochs.append(epoch)
 
     # Log Progress
-    if (epoch % 100) == 0:
+    if (epoch % 500) == 0:
       with torch.no_grad():
 
         model.eval()
@@ -260,19 +261,20 @@ def plot_history(x, y_target, history, poly_model = None, poly_features = None):
   plt.title("Model vs Scikit vs Math")
   plt.tight_layout()
   plt.grid(True)
-  plt.savefig("model.png")
+  plt.savefig("model.svg", format='svg') # Changed to SVG
   plt.show()
   time.sleep(10)
   plt.close()
 
 def progress(epoch_list, loss_list):
+  epoch_list, loss_list = epoch_list[100:], loss_list[100:]
   plt.figure(figsize = (10, 10))
-  plt.plot(epoch_list, loss_list)
+  plt.plot(epoch_list, loss_list, linewidth = 0.2)
   plt.xlabel("Epoch")
   plt.ylabel("Error")
   plt.title("Error over time", fontsize = "20") # Changed plt.set_title to plt.title
   plt.yscale('log') # Set y-axis to logarithmic scale
-  plt.savefig("lossrate.png")
+  plt.savefig("lossrate.svg", format='svg') # Changed to SVG
   plt.show()
   time.sleep(10)
   plt.close()
