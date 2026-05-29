@@ -1,4 +1,4 @@
-# PyTorch Non-Linear Regression Model (\(x^2\) Approximator)
+# PyTorch Polynomial Regression Model (\(x^2\) Approximator)
 
 This repo contains a program which runs a Neural Network and a scikit-learn model which are both trying to converge on a specific polynomial, x^2 in this case. It shows how Neural Networks compare with scikit-learn, as well as how learning rates and error thresholds affect the results. It also contains graphs of performance, with one showing the loss rate improving as a function of time, and the other showing the model getting closer to the overall quadratic curve as the training run moves further along.
 
