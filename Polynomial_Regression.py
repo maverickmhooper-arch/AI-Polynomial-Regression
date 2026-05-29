@@ -14,7 +14,7 @@ def function(x):
 # Model Vectorization
 def vector(span, num_generate=1000):
   x = torch.linspace(-span, span, num_generate).view(-1, 1)
-  y = function(x) # Removed noise for better results for training
+  y = function(x) + (torch.randn(x.size()) * span) # Removed noise for better results for training
   # Goal is a perfect parabola
   return x, y # Return x and y
 
