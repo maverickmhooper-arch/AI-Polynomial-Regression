@@ -1,14 +1,14 @@
 # PyTorch Non-Linear Regression Model (\(x^2\) Approximator)
 
-This repo contains a program which runs a Neural Network and a scikit-learn model which are both trying to converge on a specific polynomial, x^2 in this case. It shows how Neural Networks compare with scikit-learn, as well as how learning rates and error threshols affect the results. It also contains graphs of performance, with one showing the loss rate improving as a function of time, and the other showing the model getting closer to the overall quadratic curve as the training run moves further along.
+This repo contains a program which runs a Neural Network and a scikit-learn model which are both trying to converge on a specific polynomial, x^2 in this case. It shows how Neural Networks compare with scikit-learn, as well as how learning rates and error thresholds affect the results. It also contains graphs of performance, with one showing the loss rate improving as a function of time, and the other showing the model getting closer to the overall quadratic curve as the training run moves further along.
 
 ## Model Hyperparameters
 * **Hidden Layers:** 4 fully connected layers.
 * **Layer Width:** 128 nodes per hidden layer.
 * **Activation:** LeakyReLU (\(alpha = 0.25\)).
 * **Optimizer:** Adam.
-* **Learning Rate:** \(0.0005\) for stable convergence.
-* **Data Domain (Span):** \([-50, 50]\).
+* **Learning Rate:** Simulated through many runs to ensure fine tuning
+* **Data Domain (Span):** Chosen by the user.
 
 ---
 
@@ -50,8 +50,8 @@ python Polynomial_Regression.py
 ```
 
 ### CLI Options Available
-* `[T]rain`: Trains the model for up to 20,000 epochs. Includes automated early stopping based on Exponential Moving Average (EMA) loss thresholds.
-* `[I]nference`: Test the trained model against true mathematical outputs by entering any number between \(-50\) and \(50\).
+* `[T]rain`: Trains the model for up to 50,000 epochs. Includes automated stopping and a nearly perfect learning rate.
+* `[I]nference`: Test the trained model against true mathematical outputs by entering any number within the chosen span.
 * `[Q]uit`: Exits the loop and terminates the program.
 
 ---
@@ -76,7 +76,8 @@ In working on this project, I learned that learning models like this are incredi
 3. Why more depth and layers of a model helps the model reach the correct answer faster.
 4. I learned how to use matplotlib to model progress from the network.
 5. I learned how matplotlib can be used to compare different architectures and results.
-6. Scikit-learn is much faster and more accurate for simple problems like this. 
+6. Scikit-learn is much faster and more accurate for simple problems like this.
+7. How to add a model running multiple times with different learning rates to find the optimal one.
 
 ### Hardest Part
 The hardest part was creating the scikit-learn model and the graph comparisons. This is simply because I don't use scikit-learn often.
