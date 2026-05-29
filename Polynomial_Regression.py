@@ -7,7 +7,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
 
-
 def function(x):
   y = x**2
   return y
@@ -16,7 +15,7 @@ def function(x):
 def vector(span, num_generate=500):
   x = torch.linspace(-span, span, num_generate).view(-1, 1)
   y = function(x) # Removed noise for better results for training
-  # Goal is a perfect parabola 
+  # Goal is a perfect parabola
   return x, y # Return x and y
 
 
@@ -31,8 +30,74 @@ def scikit_model(x, y_target):
   poly_model.fit(x_ran, y_values)
   return poly_model, poly_features
 
+def model_def(x, y_target, num_epochs = 1000):
+  # This function now only determines the best learning rate
+  # It will use temporary models for this search, not the final training model.
+
+  lrs = [0.005, 0.0025, 0.001, 0.00075, 0.0005, 0.00025, 0.0001, 0.000075, 0.00005, 0.000025, 0.00001]
+  different_lr_epochs = []
+  print("Solving for learning rate...")
+  loop = 0
+  iters = 5
+  num_lrs = len(lrs)
+  for current_lr in lrs:
+    loop += 1
+    lr_epochs = []
+    # Create a fresh, temporary model for each learning rate trial
+    temp_model = nn.Sequential(
+        nn.Linear(1, 128),
+        nn.LeakyReLU(0.25),
+        nn.Linear(128, 128),
+        nn.LeakyReLU(0.25),
+        nn.Linear(128, 128),
+        nn.LeakyReLU(0.25),
+        nn.Linear(128, 128),
+        nn.LeakyReLU(0.25),
+        nn.Linear(128, 1)
+    )
+    optimizer = torch.optim.Adam(temp_model.parameters(), lr = current_lr)
+    criterion = nn.MSELoss()
+    for i in range(iters):
+      best_loss = float('inf') # Initialize with infinity
+      for epoch in range(num_epochs + 1):
+        # Forward pass
+        prediction = temp_model(x) # Use the temporary model
+        loss = criterion(prediction, y_target)
+
+        # Backward pass
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if best_loss > loss.item():
+          best_loss = loss.item()
+
+      lr_epochs.append(best_loss)
+      print(f"{i + 1} run(s) complete. {iters - (i + 1)} left.")
+    different_lr_epochs.append(lr_epochs)
+    print(f"{loop} learning rate(s) down. {num_lrs - loop} left. ")
+
+
+  # Calculate minimum loss for each learning rate across its runs
+  min_loss_per_lr_set = [min(lr_epochs) for lr_epochs in different_lr_epochs]
+
+  # Find the index of the best learning rate (the one with the minimum minimum loss)
+  best_lr_index = min_loss_per_lr_set.index(min(min_loss_per_lr_set))
+
+  # Get the best learning rate
+  selected_lr = lrs[best_lr_index]
+
+  print("Parameters finished. ")
+  print(f"Accepted learning rate is {selected_lr}.")
+  return selected_lr # Only return the selected learning rate
+
+
 def model_training(x, y_target, span, poly_model = None, poly_features = None, num_epochs = 50000):
 
+  # Get the best learning rate from model_def
+  selected_lr = model_def(x, y_target)
+
+  # Create a NEW, untrained model for the actual training
   model = nn.Sequential(
       nn.Linear(1, 128),
       nn.LeakyReLU(0.25),
@@ -44,10 +109,18 @@ def model_training(x, y_target, span, poly_model = None, poly_features = None, n
       nn.LeakyReLU(0.25),
       nn.Linear(128, 1)
   )
-
-  optimizer = torch.optim.Adam(model.parameters(), lr=0.0005)
+  optimizer = torch.optim.Adam(model.parameters(), lr = selected_lr)
   criterion = nn.MSELoss()
-  allowed_error = float(input("What would you like the allowed error to be? "))
+
+  allowed_error = None
+  while not allowed_error:
+    try:
+      allowed_error = float(input("What would you like the allowed error to be? "))
+
+    except ValueError:
+      print("Invalid input. ")
+      allowed_error = float(input("What would you like the allowed error to be, as a decimal? "))
+    print("")
   print(f"Training to solve y = x². Non-Linear Regression. ") # ² is the code for the exponent x^2
 
 
@@ -121,7 +194,7 @@ def model_training(x, y_target, span, poly_model = None, poly_features = None, n
   return False, [], losses, epochs # Signal to continue the main loop
 
 
-def inference(model, span):
+def inference(model, span, poly_model, poly_features):
 
     try:
       input_val = input("What is the value that you would like to calculate? --> ")
@@ -144,8 +217,7 @@ def inference(model, span):
         print(f"AI Prediction -> {round(prediction.item(), 2)}")
         print(f"Error was {abs(prediction.item() - (function(float(input_float))))}") # Use input_float
         # Fixed: Using [0,0] for scikit_prediction for robustness
-        print(f"Scikit Prediction -> {round(scikit_prediction[0,0], 2)},"
-)
+        print(f"Scikit Prediction -> {round(scikit_prediction[0,0], 2)}," )
         print(f"Error was {abs(scikit_prediction[0,0] - function(float(input_float)))}") # Use input_float
         print(f"Mathematical answer -> {function(float(input_float))}") # Use input_float
 
@@ -154,6 +226,10 @@ def inference(model, span):
 
 def plot_history(x, y_target, history, poly_model = None, poly_features = None):
   history = history[1:]
+  if not history: # Added check for empty history
+    print("No history available to plot after initial slice. Skipping plot_history.")
+    return
+
   indices = [0, len(history)//3, 2*len(history)//3, len(history) - 1]
 
   scikit_line = None
@@ -164,7 +240,7 @@ def plot_history(x, y_target, history, poly_model = None, poly_features = None):
   fig, axes = plt.subplots(2, 2, figsize = (6, 5))
   axes = axes.flatten()
   for i, idx in enumerate(indices):
-    if idx >= len(history):
+    if idx >= len(history): # This check correctly handles positive indices, but not negative on empty list
       continue
     epoch, predictions = history[idx]
     ax = axes[i]
@@ -202,10 +278,15 @@ def progress(epoch_list, loss_list):
   plt.close()
 
 def main():
-  span = 50
+  span = None
+  while not span:
+    try:
+      span = int(input("What would you like the span to be? "))
+    except ValueError:
+      print("Invalid input. ")
+      span = None
   x, y_target = vector(span, 500)
   # Initialize these globally for inference function to access them
-  global poly_model, poly_features
   poly_model = None
   poly_features = None
 
@@ -220,7 +301,7 @@ def main():
         progress(epochs, losses)
     elif (user_input == "I"):
       if model and poly_model and poly_features: # Ensure all models are trained for inference
-        inference(model, span)
+        inference(model, span, poly_model, poly_features)
       else:
         print("No models exist or are trained. Train first. ")
 
