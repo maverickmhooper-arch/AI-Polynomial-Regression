@@ -14,8 +14,7 @@ def function(x):
 # Model Vectorization
 def vector(span, num_generate=1000):
   x = torch.linspace(-span, span, num_generate).view(-1, 1)
-  y = function(x) # Removed noise for better results for training
-  # Goal is a perfect parabola
+  y = function(x) + torch.randn(x.size()) * span
   return x, y # Return x and y
 
 
@@ -286,7 +285,7 @@ def main():
   poly_features = None
   while True:
     user_input = input("[T]rain, [I]nference, [Q]uit. --> ").strip().upper()
-    
+
     if user_input == "T":
       span = None
       while not span:
@@ -295,7 +294,7 @@ def main():
         except ValueError:
           print("Invalid input. ")
           span = None
-      x, y_target = vector(span, 500) 
+      x, y_target = vector(span, 500)
       poly_model, poly_features = scikit_model(x, y_target)
       model, history, losses, epochs = model_training(x, y_target, span, poly_model, poly_features)
       if model is not None:
@@ -312,7 +311,7 @@ def main():
           except ValueError:
             print("Invalid input. ")
             span = None
-        x, y_target = vector(span, 500) 
+        x, y_target = vector(span, 500)
         inference(model, span, poly_model, poly_features)
       else:
         print("No models exist or are trained. Train first. ")
