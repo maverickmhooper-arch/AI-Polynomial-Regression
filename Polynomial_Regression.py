@@ -280,32 +280,39 @@ def progress(epoch_list, loss_list):
   plt.close()
 
 def main():
-  span = None
-  while not span:
-    try:
-      span = int(input("What would you like the span to be? "))
-    except ValueError:
-      print("Invalid input. ")
-      span = None
-  x, y_target = vector(span, 500)
-  # Initialize these globally for inference function to access them
+  # Initialize these for inference function to access them
+  model = None
   poly_model = None
   poly_features = None
-
   while True:
     user_input = input("[T]rain, [I]nference, [Q]uit. --> ").strip().upper()
-    model, poly_model, poly_features = None
+    
     if user_input == "T":
-      # Assign to global variables
+      span = None
+      while not span:
+        try:
+          span = int(input("What would you like the span to be? "))
+        except ValueError:
+          print("Invalid input. ")
+          span = None
+      x, y_target = vector(span, 500) 
       poly_model, poly_features = scikit_model(x, y_target)
       model, history, losses, epochs = model_training(x, y_target, span, poly_model, poly_features)
       if model is not None:
         plot_history(x, y_target, history, poly_model, poly_features)
         progress(epochs, losses)
-      else: 
+      else:
         print("No models exist. Try again. ")
     elif (user_input == "I"):
       if model is not None: # Ensure all models are trained for inference
+        span = None
+        while not span:
+          try:
+            span = int(input("What would you like the span to be? "))
+          except ValueError:
+            print("Invalid input. ")
+            span = None
+        x, y_target = vector(span, 500) 
         inference(model, span, poly_model, poly_features)
       else:
         print("No models exist or are trained. Train first. ")
