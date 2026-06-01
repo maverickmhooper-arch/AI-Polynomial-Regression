@@ -33,7 +33,7 @@ def model_def(x, y_target, num_epochs = 300):
   # This function now only determines the best learning rate
   # It will use temporary models for this search, not the final training model.
 
-  lrs = [0.005, 0.0025, 0.001, 0.00075, 0.0005, 0.00025, 0.0001, 0.000075, 0.00005, 0.000025, 0.00001]
+  lrs = [0.01, 0.0075, 0.005, 0.0025, 0.001, 0.00075, 0.0005, 0.00025, 0.0001, 0.000075, 0.00005, 0.000025, 0.00001]
   different_lr_epochs = []
   print("Solving for learning rate...")
   loop = 0
