@@ -6656,7 +6656,7 @@ When I ran the program, I noticed that, regularly, the 0.0025 or 0.005 learning 
 
 # What I Learned
 
-In working on this project, I learned that learning models like this are incredible good at finding patterns in exponential functions. It was difficult to find where to start on this, but after I got a foothold in the basics, I just grew from there.
+In working on this project, I learned that learning models like this are incredibly good at finding patterns in exponential functions. It was difficult to find where to start on this, but after I got a foothold in the basics, I just grew from there.
 
 ### I learned the following
 1. How to use the Adam optimizer and refine the learning rate.
